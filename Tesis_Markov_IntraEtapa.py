@@ -54,7 +54,8 @@ for i in range(len(Rad_df_975)):
             FH_Nuba_975.append(Rad_df_975.index[i])
             print(Rad_df_975.Radiacias.values[i])
         elif (Rad_df_975.index[i].hour == Umbral_up_975.index[j]) & (Rad_df_975.Radiacias.values[i] < Umbral_up_975.values[j][0]):
-            Rad_nuba_975.append(np.nan)
+            #Rad_nuba_975.append(np.nan)
+            Rad_nuba_975.append(0.)
             FH_Nuba_975.append(Rad_df_975.index[i])
             print('nan')
 
@@ -66,12 +67,12 @@ df_975_nuba['Fecha_Hora'] = pd.to_datetime(df_975_nuba['Fecha_Hora'], format="%Y
 df_975_nuba.index = df_975_nuba['Fecha_Hora']
 df_975_nuba = df_975_nuba.drop(['Fecha_Hora'], axis=1)
 
-df_975_nuba = df_975_nuba[df_975_nuba.Radiacias>0]
+#df_975_nuba = df_975_nuba[df_975_nuba.Radiacias>0]
 
 ####################################################################################
 ## ---------------DEFICINICIÓN DE ESTADOS CON LA FDP DE LOS ESTADOS-------------- ##
 ####################################################################################
-Histograma, Bins = np.histogram(df_975_nuba['Radiacias'][np.isfinite(df_975_nuba['Radiacias'])] , bins=5, density = False)
+Histograma, Bins = np.histogram(df_975_nuba['Radiacias'][np.isfinite(df_975_nuba['Radiacias'])] , bins=[0, Umbral_up_975.Umbral.values.min(), 40, 60, 80, 100 ], density = False)
 ####################################################################################
 ## -----------------------GENERACION DE LA LISTA DE ESTADOS---------------------- ##
 ####################################################################################
@@ -165,24 +166,25 @@ def Prob_Transicion(df_nub, horas_emp, horas_sig , Estado_ini, Name, trimestre )
     np.save(Path_save+Name+trimestre, Prob_Marginal)
 
     print('Guardando '+ Name+trimestre)
-    return Prob_Marginal
+    return Prob_Marginal, Prob_Condicional
 
 
-Prob_Marginal_tarde_morning_JJA = Prob_Transicion(df_975_nuba, 17,  6, Estado_ini, 'Array_Mark_Trans_TardeMorning', 'JJA')
-Prob_Marginal_morning_noon_JJA = Prob_Transicion(df_975_nuba, 9, 10, Estado_ini, 'Array_Mark_Trans_MorningNoon', 'JJA')
-Prob_Marginal_noon_tarde_JJA = Prob_Transicion(df_975_nuba, 14, 15, Estado_ini, 'Array_Mark_Trans_NoonTarde', 'JJA')
+Prob_Marginal_tarde_morning_JJA, Prob_Condicional_tarde_morning_JJA = Prob_Transicion(df_975_nuba, 17,  6, Estado_ini, 'Array_Mark_Trans_TardeMorning', 'JJA')
+Prob_Marginal_morning_noon_JJA , Prob_Condicional_morning_noon_JJA  = Prob_Transicion(df_975_nuba, 9,  10, Estado_ini, 'Array_Mark_Trans_MorningNoon',  'JJA')
+Prob_Marginal_noon_tarde_JJA   , Prob_Condicional_noon_tarde_JJA    = Prob_Transicion(df_975_nuba, 14, 15, Estado_ini, 'Array_Mark_Trans_NoonTarde',    'JJA')
 
-Prob_Marginal_tarde_morning_SON = Prob_Transicion(df_975_nuba, 17,  6, Estado_ini, 'Array_Mark_Trans_TardeMorning', 'SON')
-Prob_Marginal_morning_noon_SON = Prob_Transicion(df_975_nuba, 9, 10, Estado_ini, 'Array_Mark_Trans_MorningNoon', 'SON')
-Prob_Marginal_noon_tarde_SON = Prob_Transicion(df_975_nuba, 14, 15, Estado_ini, 'Array_Mark_Trans_NoonTarde', 'SON')
+Prob_Marginal_tarde_morning_SON, Prob_Condicional_tarde_morning_SON = Prob_Transicion(df_975_nuba, 17,  6, Estado_ini, 'Array_Mark_Trans_TardeMorning', 'SON')
+Prob_Marginal_morning_noon_SON , Prob_Condicional_morning_noon_SON  = Prob_Transicion(df_975_nuba, 9,  10, Estado_ini, 'Array_Mark_Trans_MorningNoon',  'SON')
+Prob_Marginal_noon_tarde_SON   , Prob_Condicional_noon_tarde_SON    = Prob_Transicion(df_975_nuba, 14, 15, Estado_ini, 'Array_Mark_Trans_NoonTarde',    'SON')
 
-Prob_Marginal_tarde_morning_DEF = Prob_Transicion(df_975_nuba, 17,  6, Estado_ini, 'Array_Mark_Trans_TardeMorning', 'DEF')
-Prob_Marginal_morning_noon_DEF = Prob_Transicion(df_975_nuba, 9, 10, Estado_ini, 'Array_Mark_Trans_MorningNoon', 'DEF')
-Prob_Marginal_noon_tarde_DEF = Prob_Transicion(df_975_nuba, 14, 15, Estado_ini, 'Array_Mark_Trans_NoonTarde', 'DEF')
+Prob_Marginal_tarde_morning_DEF, Prob_Condicional_tarde_morning_DEF = Prob_Transicion(df_975_nuba, 17,  6, Estado_ini, 'Array_Mark_Trans_TardeMorning', 'DEF')
+Prob_Marginal_morning_noon_DEF , Prob_Condicional_morning_noon_DEF  = Prob_Transicion(df_975_nuba, 9,  10, Estado_ini, 'Array_Mark_Trans_MorningNoon',  'DEF')
+Prob_Marginal_noon_tarde_DEF   , Prob_Condicional_noon_tarde_DEF    = Prob_Transicion(df_975_nuba, 14, 15, Estado_ini, 'Array_Mark_Trans_NoonTarde',    'DEF')
 
-Prob_Marginal_tarde_morning_MAM = Prob_Transicion(df_975_nuba, 17,  6, Estado_ini, 'Array_Mark_Trans_TardeMorning', 'MAM')
-Prob_Marginal_morning_noon_MAM = Prob_Transicion(df_975_nuba, 9, 10, Estado_ini, 'Array_Mark_Trans_MorningNoon', 'MAM')
-Prob_Marginal_noon_tarde_MAM = Prob_Transicion(df_975_nuba, 14, 15, Estado_ini, 'Array_Mark_Trans_NoonTarde', 'MAM')
+Prob_Marginal_tarde_morning_MAM, Prob_Condicional_tarde_morning_MAM = Prob_Transicion(df_975_nuba, 17,  6, Estado_ini, 'Array_Mark_Trans_TardeMorning', 'MAM')
+Prob_Marginal_morning_noon_MAM , Prob_Condicional_morning_noon_MAM  = Prob_Transicion(df_975_nuba, 9,  10, Estado_ini, 'Array_Mark_Trans_MorningNoon',  'MAM')
+Prob_Marginal_noon_tarde_MAM   , Prob_Condicional_noon_tarde_MAM    = Prob_Transicion(df_975_nuba, 14, 15, Estado_ini, 'Array_Mark_Trans_NoonTarde',    'MAM')
+
 
 ##########NOMBRES###########
 """
@@ -205,50 +207,95 @@ Guardando Array_Mark_Trans_NoonTardeMAM
 ## -----------------------------------GRAFICA-------------------------------- ##
 ################################################################################
 
-MAM_resha_tarde_morning = np.reshape(Prob_Marginal_tarde_morning_MAM, (-1, 5))
-MAM_resha_morning_noon = np.reshape(Prob_Marginal_morning_noon_MAM, (-1, 5))
-MAM_resha_noon_tarde = np.reshape(Prob_Marginal_noon_tarde_MAM, (-1, 5))
+MAM_resha_tarde_morning_m = np.reshape(Prob_Marginal_tarde_morning_MAM, (-1, 5))
+MAM_resha_morning_noon_m  = np.reshape(Prob_Marginal_morning_noon_MAM,  (-1, 5))
+MAM_resha_noon_tarde_m    = np.reshape(Prob_Marginal_noon_tarde_MAM,    (-1, 5))
 
-DEF_resha_tarde_morning = np.reshape(Prob_Marginal_tarde_morning_DEF, (-1, 5))
-DEF_resha_morning_noon = np.reshape(Prob_Marginal_morning_noon_DEF, (-1, 5))
-DEF_resha_noon_tarde = np.reshape(Prob_Marginal_noon_tarde_DEF, (-1, 5))
+DEF_resha_tarde_morning_m = np.reshape(Prob_Marginal_tarde_morning_DEF, (-1, 5))
+DEF_resha_morning_noon_m  = np.reshape(Prob_Marginal_morning_noon_DEF,  (-1, 5))
+DEF_resha_noon_tarde_m    = np.reshape(Prob_Marginal_noon_tarde_DEF,    (-1, 5))
 
-JJA_resha_tarde_morning = np.reshape(Prob_Marginal_tarde_morning_JJA, (-1, 5))
-JJA_resha_morning_noon = np.reshape(Prob_Marginal_morning_noon_JJA, (-1, 5))
-JJA_resha_noon_tarde = np.reshape(Prob_Marginal_noon_tarde_JJA, (-1, 5))
+JJA_resha_tarde_morning_m = np.reshape(Prob_Marginal_tarde_morning_JJA, (-1, 5))
+JJA_resha_morning_noon_m  = np.reshape(Prob_Marginal_morning_noon_JJA,  (-1, 5))
+JJA_resha_noon_tarde_m    = np.reshape(Prob_Marginal_noon_tarde_JJA,    (-1, 5))
 
-SON_resha_tarde_morning = np.reshape(Prob_Marginal_tarde_morning_SON, (-1, 5))
-SON_resha_morning_noon = np.reshape(Prob_Marginal_morning_noon_SON, (-1, 5))
-SON_resha_noon_tarde = np.reshape(Prob_Marginal_noon_tarde_SON, (-1, 5))
+SON_resha_tarde_morning_m = np.reshape(Prob_Marginal_tarde_morning_SON, (-1, 5))
+SON_resha_morning_noon_m  = np.reshape(Prob_Marginal_morning_noon_SON,  (-1, 5))
+SON_resha_noon_tarde_m    = np.reshape(Prob_Marginal_noon_tarde_SON,    (-1, 5))
 
 
-data = [DEF_resha_tarde_morning , MAM_resha_tarde_morning, JJA_resha_tarde_morning, SON_resha_tarde_morning, DEF_resha_morning_noon, MAM_resha_morning_noon, JJA_resha_morning_noon, SON_resha_morning_noon,  DEF_resha_noon_tarde, MAM_resha_noon_tarde, JJA_resha_noon_tarde, SON_resha_noon_tarde]
-data = np.array(data)
+MAM_resha_tarde_morning_c = np.reshape(Prob_Condicional_tarde_morning_MAM, (-1, 5))
+MAM_resha_morning_noon_c  = np.reshape(Prob_Condicional_morning_noon_MAM,  (-1, 5))
+MAM_resha_noon_tarde_c    = np.reshape(Prob_Condicional_noon_tarde_MAM,    (-1, 5))
+
+DEF_resha_tarde_morning_c = np.reshape(Prob_Condicional_tarde_morning_DEF, (-1, 5))
+DEF_resha_morning_noon_c  = np.reshape(Prob_Condicional_morning_noon_DEF,  (-1, 5))
+DEF_resha_noon_tarde_c    = np.reshape(Prob_Condicional_noon_tarde_DEF,    (-1, 5))
+
+JJA_resha_tarde_morning_c = np.reshape(Prob_Condicional_tarde_morning_JJA, (-1, 5))
+JJA_resha_morning_noon_c  = np.reshape(Prob_Condicional_morning_noon_JJA,  (-1, 5))
+JJA_resha_noon_tarde_c    = np.reshape(Prob_Condicional_noon_tarde_JJA,    (-1, 5))
+
+SON_resha_tarde_morning_c = np.reshape(Prob_Condicional_tarde_morning_SON, (-1, 5))
+SON_resha_morning_noon_c  = np.reshape(Prob_Condicional_morning_noon_SON,  (-1, 5))
+SON_resha_noon_tarde_c    = np.reshape(Prob_Condicional_noon_tarde_SON,    (-1, 5))
+
+
+data_marg = np.array([DEF_resha_tarde_morning_m, MAM_resha_tarde_morning_m, JJA_resha_tarde_morning_m, SON_resha_tarde_morning_m, DEF_resha_morning_noon_m, MAM_resha_morning_noon_m, JJA_resha_morning_noon_m, SON_resha_morning_noon_m,  DEF_resha_noon_tarde_m, MAM_resha_noon_tarde_m, JJA_resha_noon_tarde_m, SON_resha_noon_tarde_m])
+data_cond = np.array([DEF_resha_tarde_morning_c, MAM_resha_tarde_morning_c, JJA_resha_tarde_morning_c, SON_resha_tarde_morning_c, DEF_resha_morning_noon_c, MAM_resha_morning_noon_c, JJA_resha_morning_noon_c, SON_resha_morning_noon_c,  DEF_resha_noon_tarde_c, MAM_resha_noon_tarde_c, JJA_resha_noon_tarde_c, SON_resha_noon_tarde_c])
+
 titles =[ u'DEF Tarde a Mañana', u'MAM Tarde a Mañana', u'JJA Tarde a Mañana',u'SON Tarde a Mañana', 'DEF Mañana a Medio dia', 'MAM Mañana a Medio dia', 'JJA Mañana a Medio dia','SON Mañana a Medio dia', 'DEF Medio dia a Tarde', 'MAM Medio dia a Tarde', 'JJA Medio dia a Tarde','SON Medio dia a Tarde']
 
+cmap1 = plt.cm.viridis_r
+cmap1.set_bad('white',1.)
 plt.close('all')
 fig = plt.figure(figsize=(17,13))
 for i in range(0, 12):
     ax = fig.add_subplot(3, 4, i+1)
-    cs = ax.imshow(data[i], cmap ='BuGn')
+    cs = ax.imshow(data_marg[i], cmap=cmap1)
     ax.set_ylabel('Estado Inicial', fontproperties = prop_1, fontsize =14)
     ax.set_xlabel('Estado Final', fontproperties = prop_1, fontsize =14)
     ax.set_title(titles[i], fontproperties = prop, fontsize =15)
-    #data[i][data[i]<10]=np.nan
+    data_marg[i][data_marg[i]==0]=None
     for k in range(0,5):
         for j in range(0,5):
-            text = ax.text(j, k, round(data[i][k, j], 2),  ha="center", va="center", color="w")
+            text = ax.text(j, k, round(data_marg[i][k, j], 2),  ha="center", va="center", color="w")
     ax.set_xticklabels(np.array(['0','1', '2', '3', '4', '5']))
     ax.set_yticklabels(np.array(['0', '1', '2', '3', '4', '5']))
 
 plt.subplots_adjust(left=0.125, bottom=0.085, right=0.9, top=0.95, wspace=0.35, hspace=0.01)
-
 cbar_ax = fig.add_axes([0.125, 0.05, 0.78, 0.015])
 cbar = fig.colorbar(cs, cax=cbar_ax,  orientation='horizontal', format="%.2f")
 cbar.set_label(u'Probabilidad [%]',  fontproperties = prop, fontsize=20 )
 
-plt.savefig('/home/nacorreasa/Escritorio/Figuras/MarkovChain_InterEtapa.pdf', format='pdf', transparent=True)
-os.system('scp /home/nacorreasa/Escritorio/Figuras/MarkovChain_InterEtapa.pdf nacorreasa@192.168.1.74:/var/www/nacorreasa/Graficas_Resultados/Estudio')
+plt.savefig('/home/nacorreasa/Escritorio/Figuras/MarkovChain_InterEtapa_marg.pdf', format='pdf', transparent=True)
+
+
+cmap2 = plt.cm.viridis_r
+cmap2.set_bad('white',1.)
+plt.close('all')
+fig = plt.figure(figsize=(17,13))
+for i in range(0, 12):
+    ax = fig.add_subplot(3, 4, i+1)
+    cs = ax.imshow(data_cond[i], cmap=cmap2)
+    ax.set_ylabel('Estado Inicial', fontproperties = prop_1, fontsize =14)
+    ax.set_xlabel('Estado Final', fontproperties = prop_1, fontsize =14)
+    ax.set_title(titles[i], fontproperties = prop, fontsize =15)
+    data_cond[i][data_cond[i]==0]=None
+    for k in range(0,5):
+        for j in range(0,5):
+            text = ax.text(j, k, round(data_cond[i][k, j], 2),  ha="center", va="center", color="w")
+    ax.set_xticklabels(np.array(['0','1', '2', '3', '4', '5']))
+    ax.set_yticklabels(np.array(['0', '1', '2', '3', '4', '5']))
+
+plt.subplots_adjust(left=0.125, bottom=0.085, right=0.9, top=0.95, wspace=0.35, hspace=0.01)
+cbar_ax = fig.add_axes([0.125, 0.05, 0.78, 0.015])
+cbar = fig.colorbar(cs, cax=cbar_ax,  orientation='horizontal', format="%.2f")
+cbar.set_label(u'Probabilidad [%]',  fontproperties = prop, fontsize=20 )
+
+plt.savefig('/home/nacorreasa/Escritorio/Figuras/MarkovChain_InterEtapa_cond.pdf', format='pdf', transparent=True)
+
+os.system('scp /home/nacorreasa/Escritorio/Figuras/MarkovChain_InterEtapa*.pdf nacorreasa@192.168.1.74:/var/www/nacorreasa/Graficas_Resultados/Estudio')
 
 
 
