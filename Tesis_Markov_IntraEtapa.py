@@ -308,8 +308,6 @@ os.system('scp /home/nacorreasa/Escritorio/Figuras/MarkovChain_InterEtapa*.pdf n
 
 
 
-
-
 # def Prob(df_nub, horas_emp, horas_sig , Estado_ini, Name ):
 #     """
 #     Calcula la probabilidad de pasar de estados entre los periodos definidos
